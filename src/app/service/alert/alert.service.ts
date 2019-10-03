@@ -27,6 +27,10 @@ export class AlertPresentedEvent extends AlertEvent<any> {
   data: any;
 }
 
+/**
+ * Fornisce un'interfaccia Fluent per la gestione degli alert e dei loro eventi.
+ * Per aprire il dialog, basta invocare `.present()`.
+ */
 export class AlertServiceEventBinder {
   private alertId: AlertId;
   private alert: HTMLIonAlertElement;
@@ -54,6 +58,11 @@ export class AlertServiceEventBinder {
     this.alertController.create(this.alertOptions)
       .then(alert => {
         this.alert = alert;
+        from(this.alert.onDidDismiss())
+          .subscribe((_) => {
+            // TODO: Passare il buttonId all'AlertClosedEvent!
+            this.closed$.next(new AlertClosedEvent(this.alertId, ''));
+          });
         this.alert.present()
           .then(() => {
             this.presented$.next(new AlertPresentedEvent(this.alertId, null));

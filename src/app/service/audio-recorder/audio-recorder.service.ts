@@ -33,7 +33,7 @@ export class AudioRecordingService {
   public startedRecording$: Subject<string>;
   public stoppedRecording$: Subject<string>;
 
-  constructor(private alertSvc: AlertService, private media: Media) {
+  constructor(private media: Media) {
     this.startedRecording$ = new Subject<string>();
     this.stoppedRecording$ = new Subject<string>();
   }
@@ -55,8 +55,7 @@ export class AudioRecordingService {
       });
       return ret;
     } catch (e) {
-      this.alertSvc.create('AudioRecordingService', 'Error', 'Cannot start recording', ['Ok'])
-        .present();
+      return null;
     }
   }
 }
