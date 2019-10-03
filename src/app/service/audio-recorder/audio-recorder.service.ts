@@ -2,9 +2,6 @@ import { Injectable } from '@angular/core';
 import { AlertService } from '../alert/alert.service';
 import { Media, MediaObject } from '@ionic-native/media/ngx';
 import { Subject } from 'rxjs';
-@Injectable({
-  providedIn: 'root'
-})
 
 /**
  * Rappresenta una registrazione che è già iniziata, e che può essere chiusa.
@@ -28,6 +25,10 @@ export class Recording {
     }
   }
 }
+
+@Injectable({
+  providedIn: 'root'
+})
 export class AudioRecordingService {
   public startedRecording$: Subject<string>;
   public stoppedRecording$: Subject<string>;
