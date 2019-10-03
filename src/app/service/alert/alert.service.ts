@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subject, from } from 'rxjs';
 import { AlertController } from '@ionic/angular';
-import { OverlayEventDetail } from '@ionic/core';
+import { OverlayEventDetail, AlertOptions } from '@ionic/core';
 
 /// An alert identifier, used to route external logic
 export type AlertId = string | number;
@@ -30,19 +30,17 @@ export class AlertPresentedEvent extends AlertEvent<any> {
 export class AlertServiceEventBinder {
   private alertId: AlertId;
   private alert: HTMLIonAlertElement;
+  private alertController: AlertController;
+  private alertOptions: AlertOptions;
   public presented$: Subject<AlertPresentedEvent>;
   public closed$: Subject<AlertClosedEvent>;
 
-  constructor(alertId: AlertId, alert: HTMLIonAlertElement) {
-    this.alert = alert;
+  constructor(alertController: AlertController, alertId: AlertId, alertOptions: AlertOptions) {
+    this.alertId = alertId;
+    this.alertOptions = alertOptions;
+    this.alertController = alertController;
     this.closed$ = new Subject<AlertClosedEvent>();
     this.presented$ = new Subject<AlertPresentedEvent>();
-    this.alertId = alertId;
-
-    from(this.alert.onDidDismiss())
-      .subscribe((detail: OverlayEventDetail) => {
-        this.closed$.next(new AlertClosedEvent(alertId, detail.data));
-      });
   }
   closed(callback: (evt: AlertClosedEvent) => void): AlertServiceEventBinder {
     this.closed$.subscribe((data: AlertClosedEvent) => callback(data));
@@ -52,9 +50,15 @@ export class AlertServiceEventBinder {
     this.presented$.subscribe((data: AlertPresentedEvent) => callback(data));
     return this;
   }
-  async present(): Promise<void> {
-    await this.alert.present();
-    this.presented$.next(new AlertPresentedEvent(this.alertId, null));
+  present(): void {
+    this.alertController.create(this.alertOptions)
+      .then(alert => {
+        this.alert = alert;
+        this.alert.present()
+          .then(() => {
+            this.presented$.next(new AlertPresentedEvent(this.alertId, null));
+          });
+      });
   }
 }
 
@@ -63,12 +67,11 @@ export class AlertServiceEventBinder {
 export class AlertService {
   constructor(private alertController: AlertController) {}
 
-  async create(id: AlertId, header: string, message: string, buttons: string[]): Promise<AlertServiceEventBinder> {
-    const alert = await this.alertController.create({
-      header,
-      message,
-      buttons
-    });
-    return new AlertServiceEventBinder(id, alert);
+  create(id: AlertId, header: string, message: string, buttons: string[]): AlertServiceEventBinder {
+    return new AlertServiceEventBinder(
+      this.alertController,
+      id,
+      { header, message, buttons }
+    );
   }
 }

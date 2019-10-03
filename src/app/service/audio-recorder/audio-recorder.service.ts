@@ -40,9 +40,7 @@ export class AudioRecordingService {
       return new Recording(filename, file);
     } catch (e) {
       this.alertSvc.create('AudioRecordingService', 'Error', 'Cannot start recording', ['Ok'])
-        .then(binder => {
-          binder.present();
-        });
+        .present();
     }
   }
 
