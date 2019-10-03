@@ -6,23 +6,28 @@ import { Subject } from 'rxjs';
   providedIn: 'root'
 })
 
+/**
+ * Rappresenta una registrazione che è già iniziata, e che può essere chiusa.
+ */
 export class Recording {
   public filename: string;
-  public isClosed: boolean;
+  public isStopped: boolean;
+  public stopped$: Subject<void>;
+
   private mediaObject: MediaObject;
   constructor(filename: string, obj: MediaObject) {
     this.filename = filename;
     this.mediaObject = obj;
   }
 
-  close(): void {
-    if (!this.isClosed) {
+  stop(): void {
+    if (!this.isStopped) {
       this.mediaObject.stopRecord();
-      this.isClosed = true;
+      this.isStopped = true;
+      this.stopped$.next();
     }
   }
 }
-
 export class AudioRecordingService {
   public startedRecording$: Subject<string>;
   public stoppedRecording$: Subject<string>;
@@ -32,20 +37,25 @@ export class AudioRecordingService {
     this.stoppedRecording$ = new Subject<string>();
   }
 
+  /**
+   * Comincia a registrare un file audio.
+   * @returns Un oggetto `rec` di tipo Recording che può essere fermato (`rec.stop()`).
+   * @event `startedRecording$`
+   * @event `stoppedRecording$` (chiamato automaticamente da `rec.stop()`).
+   */
   startRecording(filename: string): Recording {
     const file = this.media.create(filename);
     try {
       file.startRecord();
       this.startedRecording$.next(filename);
-      return new Recording(filename, file);
+      const ret = new Recording(filename, file);
+      ret.stopped$.subscribe(() => {
+        this.stoppedRecording$.next(ret.filename);
+      });
+      return ret;
     } catch (e) {
       this.alertSvc.create('AudioRecordingService', 'Error', 'Cannot start recording', ['Ok'])
         .present();
     }
-  }
-
-  stopRecording(rec: Recording): void {
-    rec.close();
-    this.stoppedRecording$.next(rec.filename);
   }
 }
