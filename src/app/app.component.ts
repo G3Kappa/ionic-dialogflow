@@ -70,7 +70,7 @@ export class AppComponent {
         }
         this.alertSvc
           .create('e-no_core_perms', 'Permission error', 'The app needs TTS and storage permissions.', ['Ok'])
-          .closed(_ => window['plugins'].exit())
+          .closed(_ => navigator['app'].exitApp())
           .present();
       });
     });
