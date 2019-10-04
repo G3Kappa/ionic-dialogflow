@@ -54,33 +54,26 @@ export class AlertServiceEventBinder {
     this.presented$.subscribe((data: AlertPresentedEvent) => callback(data));
     return this;
   }
-  present(): void {
-    this.alertController.create(this.alertOptions)
-      .then(alert => {
-        this.alert = alert;
-        from(this.alert.onDidDismiss())
-          .subscribe((_) => {
-            // TODO: Passare il buttonId all'AlertClosedEvent!
-            this.closed$.next(new AlertClosedEvent(this.alertId, ''));
-          });
-        this.alert.present()
-          .then(() => {
-            this.presented$.next(new AlertPresentedEvent(this.alertId, null));
-          });
+  present(): AlertServiceEventBinder {
+    this.alertController.create(this.alertOptions).then(alert => {
+      this.alert = alert;
+      from(this.alert.onDidDismiss()).subscribe(_ => {
+        // TODO: Passare il buttonId all'AlertClosedEvent!
+        this.closed$.next(new AlertClosedEvent(this.alertId, ''));
       });
+      this.alert.present().then(() => {
+        this.presented$.next(new AlertPresentedEvent(this.alertId, null));
+      });
+    });
+    return this;
   }
 }
-
 
 @Injectable({ providedIn: 'root' })
 export class AlertService {
   constructor(private alertController: AlertController) {}
 
   create(id: AlertId, header: string, message: string, buttons: string[]): AlertServiceEventBinder {
-    return new AlertServiceEventBinder(
-      this.alertController,
-      id,
-      { header, message, buttons }
-    );
+    return new AlertServiceEventBinder(this.alertController, id, { header, message, buttons });
   }
 }
