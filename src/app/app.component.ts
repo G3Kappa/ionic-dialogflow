@@ -23,19 +23,17 @@ export class AppComponent {
     private alertSvc: AlertService,
     private diagnostic: Diagnostic
   ) {
-    this.requestPermissions();
     this.initializeApp();
   }
 
   requestPermissions(): void {
-    this.diagnostic
-      .requestExternalStorageAuthorization()
-      .catch(error => {
-        this.alertSvc.create('e-no_storage', 'Error', 'Cannot access local storage.', ['Ok']).present();
-      });
+    this.diagnostic.requestExternalStorageAuthorization().catch(error => {
+      this.alertSvc.create('e-no_storage', 'Error', 'Cannot access local storage.', ['Ok']).present();
+    });
   }
   initializeApp(): void {
     this.platform.ready().then(() => {
+      this.requestPermissions();
       this.statusBar.styleDefault();
       this.splashScreen.hide();
       const fn = 'test.wav';
