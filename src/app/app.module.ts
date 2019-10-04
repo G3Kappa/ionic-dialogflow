@@ -13,11 +13,12 @@ import { TextToSpeechService } from './service/tts/tts.service';
 import { File as FileService } from '@ionic-native/file/ngx';
 import { Diagnostic } from '@ionic-native/diagnostic/ngx';
 import { SpeechRecognition } from '@ionic-native/speech-recognition/ngx';
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
-  imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule, HttpClientModule],
+  imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule, HttpClientModule, FlexLayoutModule],
   providers: [
     StatusBar,
     SplashScreen,
@@ -26,6 +27,7 @@ import { SpeechRecognition } from '@ionic-native/speech-recognition/ngx';
     TextToSpeechService,
     Diagnostic,
     FileService,
+    Diagnostic,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

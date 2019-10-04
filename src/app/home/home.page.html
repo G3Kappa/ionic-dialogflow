@@ -7,7 +7,35 @@
 </ion-header>
 
 <ion-content>
+  <div *ngFor="let message of sentences">
+    <p>{{ message.sender }}: {{ message.body }}</p>
+  </div>
 </ion-content>
 
+<ion-footer style="height: 100px">
+  <div fxLayout="row" fxLayoutAlign="space-around center">
+    <div fxFlex="80" style="background-color:  red">
 
+    </div>
+  <div fxFlex="10" style="background-color: blue">
 
+  </div>
+  <div fxFlex="10" style="background-color: green"></div>
+  </div>
+  <!-- <div fxLayout="row" fxLayoutAlign="space-around center">
+    <div fxFlex="50">
+      <ion-input type="text" [(ngModel)]="message">
+      </ion-input>
+    </div>
+    <div fxFlex="10">
+      <ion-button (click)="onSendMessage('human', message)">
+        <ion-icon name="send"></ion-icon>
+      </ion-button>
+    </div>
+    <div fxFlex="10">
+      <ion-button (click)="onStartRecording()">
+        <ion-icon name="mic"></ion-icon>
+      </ion-button>
+    </div>
+  </div> -->
+</ion-footer>
