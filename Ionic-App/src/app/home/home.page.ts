@@ -3,6 +3,10 @@ import { AlertService } from '../service/alert/alert.service';
 import { Message } from '../message';
 import { TextToSpeechService } from '../service/tts/tts.service';
 import { ControlValueAccessor } from '@angular/forms';
+import { SpeechToTextService } from '../service/stt/stt.service';
+import { AssistantService } from '../service/assistant/assistant.service';
+import { Subject } from 'rxjs';
+import { send } from 'q';
 
 @Component({
   selector: 'app-home',
@@ -12,28 +16,24 @@ import { ControlValueAccessor } from '@angular/forms';
 export class HomePage  {
   message: string = '';
   sentences: Array<Message>;
+  assistantReplied$: Subject<string>;
 
   constructor(
     private tts: TextToSpeechService,
-    alertSvc: AlertService,
+    private stt: SpeechToTextService,
+    private assistant: AssistantService,
+    private alertSvc: AlertService,
     private ngZone: NgZone
   ) {
-    this.sentences = [
-      { sender: 'human', body: 'Richiesta 1', date: new Date() },
-      { sender: 'assistant', body: 'Risposta 1', date: new Date() },
-      { sender: 'human', body: 'Richiesta 2', date: new Date() },
-      { sender: 'assistant', body: 'Risposta 2', date: new Date() },
-      { sender: 'human', body: 'Richiesta 3', date: new Date() },
-      { sender: 'assistant', body: 'Risposta 3', date: new Date()},
-      { sender: 'human', body: 'Richiesta 4', date: new Date() },
-      { sender: 'assistant', body: 'Risposta 4', date: new Date() },
-      { sender: 'human', body: 'Richiesta 5', date: new Date() },
-      { sender: 'assistant', body: 'Risposta 5', date: new Date() },
-    ];
+    this.sentences = [];
+    this.assistantReplied$ = new Subject<string>();
+    this.assistantReplied$.subscribe(reply => {
+      this.sendMessage('Assistant', reply);
+    });
   }
 
   onStartRecording() {
-    this.tts.startTranscribing()
+    this.stt.startTranscribing()
       .subscribe((data: string[]) => {
         this.ngZone.run(() => {
           this.message = data[0];
@@ -41,11 +41,18 @@ export class HomePage  {
       });
   }
 
+  sendMessage(user: string, message: string) {
+    this.tts.speak(`${user} dice: ${message}`);
+    this.sentences.push({sender: user, body: message, date: new Date()});
+  }
+
   onSendMessage(user: string, message: string) {
     if (message.trim().length === 0) {
       return;
     }
-    this.sentences.push({sender: user, body: message, date: new Date()});
+    this.sendMessage(user, message);
+    this.assistant.getReply(message)
+      .subscribe(reply =>  this.assistantReplied$.next(reply));
     this.message = '';
   }
 }
