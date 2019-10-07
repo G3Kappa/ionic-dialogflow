@@ -55,7 +55,7 @@ namespace API.Controllers
 
             return new ActionResult<Models.DataflowResponse>(new Models.DataflowResponse()
             {
-                ResponseText = dialogFlow.QueryResult.FulfillmentMessages.First().Text.ToString()
+                ResponseText = dialogFlow.QueryResult.FulfillmentMessages.First().Text.Text_.First()
             });
         }
     }

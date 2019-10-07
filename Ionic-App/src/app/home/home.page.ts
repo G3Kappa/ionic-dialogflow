@@ -46,7 +46,7 @@ export class HomePage  {
     }
     this.sendMessage(user, message);
     this.assistant.getReply(message)
-      .subscribe(reply => this.sendMessage('Assistant', reply));
+      .subscribe(reply => this.sendMessage('Assistant', reply.responseText));
     this.message = '';
   }
 }
