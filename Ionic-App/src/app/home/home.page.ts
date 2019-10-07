@@ -15,7 +15,6 @@ import { Subject } from 'rxjs';
 export class HomePage  {
   message = '';
   sentences: Array<Message>;
-  assistantReplied$: Subject<string>;
 
   constructor(
     private tts: TextToSpeechService,
@@ -25,10 +24,6 @@ export class HomePage  {
     private ngZone: NgZone
   ) {
     this.sentences = [];
-    this.assistantReplied$ = new Subject<string>();
-    this.assistantReplied$.subscribe(reply => {
-      this.sendMessage('Assistant', reply);
-    });
   }
 
   onStartRecording() {
@@ -51,7 +46,7 @@ export class HomePage  {
     }
     this.sendMessage(user, message);
     this.assistant.getReply(message)
-      .subscribe(reply =>  this.assistantReplied$.next(reply));
+      .subscribe(reply => this.sendMessage('Assistant', reply));
     this.message = '';
   }
 }
