@@ -6,7 +6,7 @@ import { map } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class AssistantService {
-  private apiBaseUrl = 'http://siglatechdialogflow.azurewebsites.net/dialogflow/it_IT/';
+  private apiBaseUrl = 'http://siglatechdialogflow.azurewebsites.net/dialogflow/query/testSession/it_IT/';
 
   constructor(
     private alertController: AlertController,
