@@ -6,7 +6,6 @@ import { ControlValueAccessor } from '@angular/forms';
 import { SpeechToTextService } from '../service/stt/stt.service';
 import { AssistantService } from '../service/assistant/assistant.service';
 import { Subject } from 'rxjs';
-import { send } from 'q';
 
 @Component({
   selector: 'app-home',
@@ -14,7 +13,7 @@ import { send } from 'q';
   styleUrls: ['home.page.scss'],
 })
 export class HomePage  {
-  message: string = '';
+  message = '';
   sentences: Array<Message>;
   assistantReplied$: Subject<string>;
 

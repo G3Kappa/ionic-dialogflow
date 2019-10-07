@@ -7,8 +7,23 @@
 </ion-header>
 
 <ion-content>
-  <div *ngFor="let message of sentences">
-    <p>{{ message.sender }}: {{ message.body }}</p>
+  <div class="chats">
+    <div class="chatbox">
+      <div *ngFor="let message of sentences">
+        <div class="message sent" *ngIf="message.sender !== 'Assistant'">
+          {{ message.body }}
+          <span class="metadata">
+            <span class="time">{{ message.date | date: 'HH:mm aaa' }}</span>
+          </span>
+        </div>
+        <div class="message received" *ngIf="message.sender == 'human'">
+          {{ message.body }}
+          <span class="metadata">
+            <span class="time">{{ message.date | date: 'HH:mm aaa' }}</span>
+          </span>
+        </div>
+      </div>
+    </div>
   </div>
 </ion-content>
 
@@ -16,16 +31,13 @@
   <ion-toolbar>
     <ion-grid>
       <ion-row class="message-box">
-        <ion-col size="7">
+        <ion-col size="8">
           <ion-input type="text" [(ngModel)]="message"></ion-input>
         </ion-col>
         <ion-col size="2">
           <ion-button (click)="onSendMessage('human', message)">
             <ion-icon name="send"></ion-icon>
           </ion-button>
-        </ion-col>
-        <ion-col size="0.5">
-
         </ion-col>
         <ion-col size="2">
           <ion-button (click)="onStartRecording()">
@@ -36,60 +48,3 @@
     </ion-grid>
   </ion-toolbar>
 </ion-footer>
-<!-- <div fxLayout="row" fxLayoutAlign="space-around center">
-    <div fxFlex="50">
-      <ion-input type="text" [(ngModel)]="message">
-      </ion-input>
-    </div>
-    <div fxFlex="10">
-      <ion-button (click)="onSendMessage('human', message)">
-        <ion-icon name="send"></ion-icon>
-      </ion-button>
-    </div>
-    <div fxFlex="10">
-      <ion-button (click)="onStartRecording()">
-        <ion-icon name="mic"></ion-icon>
-      </ion-button>
-    </div>
-  </div> -->
-
-
-
-
-<!-- <ion-footer>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button></ion-back-button>
-    </ion-buttons>
-    <ion-title>Back Button</ion-title>
-  </ion-toolbar>
-
-  <ion-toolbar>
-    <ion-buttons slot="secondary">
-      <ion-button>
-        <ion-icon slot="icon-only" name="contact"></ion-icon>
-      </ion-button>
-      <ion-button>
-        <ion-icon slot="icon-only" name="search"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-    <ion-title>Default Buttons</ion-title>
-    <ion-buttons slot="primary">
-      <ion-button color="secondary">
-        <ion-icon slot="icon-only" name="more"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-
-  <ion-toolbar>
-    <ion-buttons slot="primary">
-      <ion-button>
-        <ion-icon slot="icon-only" name="star"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-    <ion-title>Right side menu toggle</ion-title>
-    <ion-buttons slot="end">
-      <ion-menu-button autoHide="false"></ion-menu-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-footer> -->
