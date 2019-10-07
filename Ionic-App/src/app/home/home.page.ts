@@ -36,7 +36,6 @@ export class HomePage  {
   }
 
   sendMessage(user: string, message: string) {
-    this.tts.speak(`${user} dice: ${message}`);
     this.sentences.push({sender: user, body: message, date: new Date()});
   }
 
@@ -46,7 +45,10 @@ export class HomePage  {
     }
     this.sendMessage(user, message);
     this.assistant.getReply(message)
-      .subscribe(reply => this.sendMessage('Assistant', reply.responseText));
+      .subscribe(reply => {
+        this.tts.speak(reply.responseText);
+        this.sendMessage('Assistant', reply.responseText);
+      });
     this.message = '';
   }
 }

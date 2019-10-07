@@ -80,19 +80,19 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>07/03/2019 01:30:32</publishTime>
     </File>
     <File Include="Service.deps.json">
-      <publishTime>10/07/2019 12:18:11</publishTime>
+      <publishTime>10/07/2019 12:31:42</publishTime>
     </File>
     <File Include="Service.dll">
-      <publishTime>10/07/2019 12:18:11</publishTime>
+      <publishTime>10/07/2019 12:31:42</publishTime>
     </File>
     <File Include="Service.pdb">
-      <publishTime>10/07/2019 12:18:11</publishTime>
+      <publishTime>10/07/2019 12:31:42</publishTime>
     </File>
     <File Include="Service.runtimeconfig.json">
       <publishTime>10/07/2019 11:34:52</publishTime>
     </File>
     <File Include="web.config">
-      <publishTime>10/07/2019 12:18:11</publishTime>
+      <publishTime>10/07/2019 12:31:42</publishTime>
     </File>
   </ItemGroup>
 </Project>

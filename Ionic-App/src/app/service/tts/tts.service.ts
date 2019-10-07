@@ -12,7 +12,10 @@ export class TextToSpeechService {
   }
 
   speak(msg: string): void {
-    this.textToSpeech.speak(msg);
+    this.textToSpeech.speak({
+      text: msg,
+      locale: 'it-IT'
+    });
     // TODO Errors
   }
 }
