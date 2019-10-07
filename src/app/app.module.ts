@@ -9,22 +9,25 @@ import { HttpClientModule } from '@angular/common/http';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { AlertService } from './service/alert/alert.service';
-import { TextToSpeechService } from './service/tts/tts.service';
+import { SpeechToTextService } from './service/stt/stt.service';
 import { File as FileService } from '@ionic-native/file/ngx';
 import { Diagnostic } from '@ionic-native/diagnostic/ngx';
 import { SpeechRecognition } from '@ionic-native/speech-recognition/ngx';
-import { FlexLayoutModule } from '@angular/flex-layout';
+import { TextToSpeech } from '@ionic-native/text-to-speech/ngx';
+import { AssistantService } from './service/assistant/assistant.service';
 
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
-  imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule, HttpClientModule, FlexLayoutModule],
+  imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule, HttpClientModule],
   providers: [
     StatusBar,
     SplashScreen,
     AlertService,
     SpeechRecognition,
-    TextToSpeechService,
+    SpeechToTextService,
+    AssistantService,
+    TextToSpeech,
     Diagnostic,
     FileService,
     Diagnostic,

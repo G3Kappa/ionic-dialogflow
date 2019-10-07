@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { Platform } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
-import { TextToSpeechService } from './service/tts/tts.service';
+import { SpeechToTextService } from './service/stt/stt.service';
 import { AlertService } from './service/alert/alert.service';
 import { Diagnostic } from '@ionic-native/diagnostic/ngx';
 import { Subject, from, Observable, of, forkJoin, merge, zip } from 'rxjs';
@@ -19,7 +19,7 @@ export class AppComponent {
     private platform: Platform,
     private splashScreen: SplashScreen,
     private statusBar: StatusBar,
-    private tts: TextToSpeechService,
+    private speechToText: SpeechToTextService,
     private alertSvc: AlertService,
     private diagnostic: Diagnostic
   ) {
@@ -39,7 +39,7 @@ export class AppComponent {
       })
     );
 
-    const tts = () => this.tts.requestPermissions().pipe(
+    const tts = () => this.speechToText.requestPermissions().pipe(
       switchMap((hasPerm: boolean) => {
         if (hasPerm) {
           return of(true);
