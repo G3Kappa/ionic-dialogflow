@@ -31,7 +31,8 @@ namespace API.Controllers
                 return BadRequest("No Google credentials provided.");
             }
 
-            var creds = GoogleCredential.FromJson(credFile);
+            var credJson = System.IO.File.ReadAllText(credFile);
+            var creds = GoogleCredential.FromJson(credJson);
             var channel = new Grpc.Core.Channel(SessionsClient.DefaultEndpoint.Host,
                           creds.ToChannelCredentials());
             var client = SessionsClient.Create(channel);
