@@ -10,13 +10,13 @@
   <div class="chats">
     <div class="chatbox">
       <div *ngFor="let message of sentences">
-        <div class="message sent" *ngIf="message.sender !== 'Assistant'">
+        <div class="message sent" *ngIf="message.sender === 'Assistant'">
           {{ message.body }}
           <span class="metadata">
             <span class="time">{{ message.date | date: 'HH:mm aaa' }}</span>
           </span>
         </div>
-        <div class="message received" *ngIf="message.sender == 'human'">
+        <div class="message received" *ngIf="message.sender !== 'Assistant'">
           {{ message.body }}
           <span class="metadata">
             <span class="time">{{ message.date | date: 'HH:mm aaa' }}</span>
