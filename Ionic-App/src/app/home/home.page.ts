@@ -1,10 +1,8 @@
 import { Component, EventEmitter, NgZone } from '@angular/core';
 import { AlertService } from '../service/alert/alert.service';
 import { Message } from '../message';
-import { SpeechToTextService } from '../service/stt/stt.service';
 import { TextToSpeechService } from '../service/tts/tts.service';
-import { AssistantService } from '../service/assistant/assistant.service';
-import { Observable, Subject } from 'rxjs';
+import { ControlValueAccessor } from '@angular/forms';
 
 @Component({
   selector: 'app-home',
@@ -12,25 +10,30 @@ import { Observable, Subject } from 'rxjs';
   styleUrls: ['home.page.scss'],
 })
 export class HomePage  {
-  message: string;
+  message: string = '';
   sentences: Array<Message>;
-  messageReceived$: Subject<string>;
 
   constructor(
-    private speechToText: SpeechToTextService,
-    private textToSpeech: TextToSpeechService,
-    private assistant: AssistantService,
-    private alertSvc: AlertService,
+    private tts: TextToSpeechService,
+    alertSvc: AlertService,
     private ngZone: NgZone
   ) {
-    this.sentences = [];
-    this.messageReceived$.subscribe(msg => {
-      this.sentences.push({sender: 'Assistant', body: msg, date: new Date()});
-    });
+    this.sentences = [
+      { sender: 'human', body: 'Richiesta 1', date: new Date() },
+      { sender: 'assistant', body: 'Risposta 1', date: new Date() },
+      { sender: 'human', body: 'Richiesta 2', date: new Date() },
+      { sender: 'assistant', body: 'Risposta 2', date: new Date() },
+      { sender: 'human', body: 'Richiesta 3', date: new Date() },
+      { sender: 'assistant', body: 'Risposta 3', date: new Date()},
+      { sender: 'human', body: 'Richiesta 4', date: new Date() },
+      { sender: 'assistant', body: 'Risposta 4', date: new Date() },
+      { sender: 'human', body: 'Richiesta 5', date: new Date() },
+      { sender: 'assistant', body: 'Risposta 5', date: new Date() },
+    ];
   }
 
   onStartRecording() {
-    this.speechToText.startTranscribing()
+    this.tts.startTranscribing()
       .subscribe((data: string[]) => {
         this.ngZone.run(() => {
           this.message = data[0];
@@ -42,9 +45,6 @@ export class HomePage  {
     if (message.trim().length === 0) {
       return;
     }
-    this.textToSpeech.speak(`${user} dice: ${message}`);
-    this.assistant.getReply(message)
-      .subscribe(reply => this.messageReceived$.next(reply));
     this.sentences.push({sender: user, body: message, date: new Date()});
     this.message = '';
   }
