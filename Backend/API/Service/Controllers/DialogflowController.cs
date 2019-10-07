@@ -21,7 +21,7 @@ namespace API.Controllers
         }
 
         [HttpPost("query/{sessionId}/{langCode}")]
-        public ActionResult<Models.DataflowResponse> Query(string sessionId, string langCode, [FromBody] string rawQuery)
+        public ActionResult<Models.DataflowResponse> Query(string sessionId, string langCode, [FromBody] Models.DialogflowRequest req)
         {
             const string agent = "notespese-nsxqke";
             const string credFile = "Credentials/google.json";
@@ -41,7 +41,7 @@ namespace API.Controllers
             {
                 Text = new TextInput()
                 {
-                    Text = rawQuery,
+                    Text = req.Query,
                     LanguageCode = langCode
                 }
             };

@@ -14,7 +14,7 @@ export class AssistantService {
     ) {}
 
   getReply(query: string): Observable<string> {
-    const post = this.httpClient.post(this.apiBaseUrl, query);
+    const post = this.httpClient.post(this.apiBaseUrl, { query });
     return post.pipe(map(obj => (obj as any).responseText.text[0]));
   }
 }
