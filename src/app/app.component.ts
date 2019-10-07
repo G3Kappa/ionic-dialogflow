@@ -28,7 +28,7 @@ export class AppComponent {
 
   requestPermissions(): Observable<boolean> {
     const diagNoStorage = this.alertSvc.create('e-no_storage', 'Permission error', 'Cannot access local storage.', ['Ok']);
-    const diagNoTts = this.alertSvc.create('e-no_tts', 'Permission error', 'Cannot access voice recognition services.', ['Ok']);
+    const diagNoStt = this.alertSvc.create('e-no_tts', 'Permission error', 'Cannot access Speech-to-Text services.', ['Ok']);
 
     const storage = () => from(this.diagnostic.requestExternalStorageAuthorization()).pipe(
       switchMap((x: string) => {
@@ -39,19 +39,19 @@ export class AppComponent {
       })
     );
 
-    const tts = () => this.speechToText.requestPermissions().pipe(
+    const stt = () => this.speechToText.requestPermissions().pipe(
       switchMap((hasPerm: boolean) => {
         if (hasPerm) {
           return of(true);
         }
-        return diagNoTts.present().closed$.pipe(map(evt => false));
+        return diagNoStt.present().closed$.pipe(map(evt => false));
       })
     );
 
     return storage()
       .pipe(
         switchMap(data => {
-          return tts().pipe(map(t => [t, data]));
+          return stt().pipe(map(t => [t, data]));
         })
       )
       .pipe(
@@ -69,7 +69,8 @@ export class AppComponent {
           return;
         }
         this.alertSvc
-          .create('e-no_core_perms', 'Permission error', 'The app needs TTS and storage permissions.', ['Ok'])
+          .create('e-no_core_perms', 'Permission error', 'The app needs Speech-To-Text and storage permissions.', ['Ok'])
+          // tslint:disable-next-line: no-string-literal
           .closed(_ => navigator['app'].exitApp())
           .present();
       });
