@@ -52,7 +52,7 @@ namespace API.Controllers
 
         private static void AddDefaultFields(Struct s, Models.DialogflowRequest req)
         {
-            AddField(s, "place", Value.KindOneofCase.StructValue, "Genova");
+            AddField(s, "place", Value.KindOneofCase.StringValue, "Genova");
         }
 
         [HttpPost("query/{sessionId}/{langCode}")]
