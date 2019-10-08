@@ -27,6 +27,13 @@ namespace API.Controllers
                 StringValue = val.ToString()
             });
         }
+        private static bool AddStructField(Google.Protobuf.WellKnownTypes.Struct s, string key, Google.Protobuf.WellKnownTypes.Struct val)
+        {
+            return s.Fields.TryAdd(key, new Google.Protobuf.WellKnownTypes.Value()
+            {
+                StructValue = val
+            });
+        }
 
         [HttpPost("query/{sessionId}/{langCode}")]
         public ActionResult<Models.DataflowResponse> Query(string sessionId, string langCode, [FromBody] Models.DialogflowRequest req)
@@ -67,7 +74,7 @@ namespace API.Controllers
                 AddField(p, "latitude", req.DeviceLocation.Value.Latitude);
                 AddField(p, "longitude", req.DeviceLocation.Value.Longitude);
                 AddField(p, "altitude", req.DeviceLocation.Value.Altitude);
-                AddField(query.Event.Parameters, "place", p);
+                AddStructField(query.Event.Parameters, "place", p);
             }
 
             var dialogFlow = client.DetectIntent(
