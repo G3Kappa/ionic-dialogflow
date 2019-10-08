@@ -41,7 +41,7 @@ namespace API.Controllers
 
         protected static void AddDefaultFields(Struct s, Models.DialogflowRequest req)
         {
-            AddField(s, "place", Value.KindOneofCase.StringValue, "Genova");
+            AddField(s, "default_place", Value.KindOneofCase.StringValue, "Napoli");
         }
     }
 }

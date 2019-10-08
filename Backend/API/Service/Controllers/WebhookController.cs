@@ -37,25 +37,21 @@ namespace API.Controllers
             var response = new WebhookResponse();
 
             var @params = request.QueryResult.Parameters;
-            response.FulfillmentText = request.QueryResult.Intent.DisplayName;
             switch (request.QueryResult.Intent.DisplayName)
             {
                 case "Test01":
                     var evt = new EventInput()
                     {
-                        Name = "TEST_EVENT",
+                        Name = "WEBHOOK_INPUTS",
                         LanguageCode = "it-IT",
                         Parameters = new Struct()
                     };
 
-                    var (hasPlace, _) = ExtractField(@params, "place");
+                    var (hasPlace, place) = ExtractField(@params, "place");
                     var (hasMoney, _) = ExtractField(@params, "money");
                     var (hasDate , _) = ExtractField(@params, "date" );
 
-                    if (!hasPlace)
-                    {
-                        AddField(evt.Parameters, "place", Value.KindOneofCase.StringValue, "Genova");
-                    }
+                    AddField(evt.Parameters, "place", Value.KindOneofCase.StringValue, hasPlace ? place.StringValue : "Milano");
                     response.FollowupEventInput = evt;
                     break;
                 default:
