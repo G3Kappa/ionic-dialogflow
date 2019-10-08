@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace API.Models
 {
-    public class DataflowResponse
+    public class DialogflowResponse
     {
         public string ResponseText { get; set; }
     }

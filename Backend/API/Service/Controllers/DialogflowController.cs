@@ -6,6 +6,8 @@ using Microsoft.Extensions.Logging;
 using Google.Cloud.Dialogflow.V2;
 using Google.Apis.Auth.OAuth2;
 using Grpc.Auth;
+using Google.Protobuf.WellKnownTypes;
+using System;
 
 namespace API.Controllers
 {
@@ -20,23 +22,41 @@ namespace API.Controllers
             _logger = logger;
         }
 
-        private static bool AddField<T>(Google.Protobuf.WellKnownTypes.Struct s, string key, T val)
+        private static void AddField<T>(Struct s, string key, Value.KindOneofCase kind, T val)
         {
-            return s.Fields.TryAdd(key, new Google.Protobuf.WellKnownTypes.Value()
+            switch (kind)
             {
-                StringValue = val.ToString()
-            });
+                case Value.KindOneofCase.StringValue when (val is string str):
+                    s.Fields.Add(key, new Value() { StringValue = str });
+                    break;
+                case Value.KindOneofCase.StringValue:
+                    s.Fields.Add(key, new Value() { StringValue = val.ToString() });
+                    break;
+                case Value.KindOneofCase.NullValue:
+                    s.Fields.Add(key, new Value() { NullValue = NullValue.NullValue });
+                    break;
+                case Value.KindOneofCase.BoolValue when (val is bool b):
+                    s.Fields.Add(key, new Value() { BoolValue = b });
+                    break;
+                case Value.KindOneofCase.StructValue when (val is Struct t):
+                    s.Fields.Add(key, new Value() { StructValue = t });
+                    break;
+                case Value.KindOneofCase.NumberValue when (val is byte || val is short || val is int || val is float || val is double || val is decimal):
+                    s.Fields.Add(key, new Value() { NumberValue =  Convert.ToDouble(val) });
+                    break;
+                default:
+                    s.Fields.Add(key, new Value() { StringValue = val.ToString() });
+                    break;
+            }
         }
-        private static bool AddStructField(Google.Protobuf.WellKnownTypes.Struct s, string key, Google.Protobuf.WellKnownTypes.Struct val)
+
+        private static void AddDefaultFields(Struct s, Models.DialogflowRequest req)
         {
-            return s.Fields.TryAdd(key, new Google.Protobuf.WellKnownTypes.Value()
-            {
-                StructValue = val
-            });
+            AddField(s, "place", Value.KindOneofCase.StructValue, "Genova");
         }
 
         [HttpPost("query/{sessionId}/{langCode}")]
-        public ActionResult<Models.DataflowResponse> Query(string sessionId, string langCode, [FromBody] Models.DialogflowRequest req)
+        public ActionResult<Models.DialogflowResponse> Query(string sessionId, string langCode, [FromBody] Models.DialogflowRequest req)
         {
             const string agent = "notespese-nsxqke";
             const string credFile = "Credentials/google.json";
@@ -63,19 +83,12 @@ namespace API.Controllers
                 {
                     
                     LanguageCode = langCode,
-                    Name = "_backendInputs",
-                    Parameters = new Google.Protobuf.WellKnownTypes.Struct()
+                    Name = "BACKEND_INPUTS",
+                    Parameters = new Struct()
                 }
             };
 
-            if(req.DeviceLocation.HasValue)
-            {
-                var p = new Google.Protobuf.WellKnownTypes.Struct();
-                AddField(p, "latitude", req.DeviceLocation.Value.Latitude);
-                AddField(p, "longitude", req.DeviceLocation.Value.Longitude);
-                AddField(p, "altitude", req.DeviceLocation.Value.Altitude);
-                AddStructField(query.Event.Parameters, "place", p);
-            }
+            AddDefaultFields(query.Event.Parameters, req);
 
             var dialogFlow = client.DetectIntent(
                 new SessionName(agent, sessionId),
@@ -84,7 +97,7 @@ namespace API.Controllers
 
             channel.ShutdownAsync();
 
-            return new ActionResult<Models.DataflowResponse>(new Models.DataflowResponse()
+            return new ActionResult<Models.DialogflowResponse>(new Models.DialogflowResponse()
             {
                 ResponseText = dialogFlow.QueryResult.FulfillmentMessages.First().Text.Text_.First()
             });
