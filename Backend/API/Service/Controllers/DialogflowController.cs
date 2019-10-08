@@ -20,6 +20,14 @@ namespace API.Controllers
             _logger = logger;
         }
 
+        private static bool AddField<T>(Google.Protobuf.WellKnownTypes.Struct s, string key, T val)
+        {
+            return s.Fields.TryAdd(key, new Google.Protobuf.WellKnownTypes.Value()
+            {
+                StringValue = val.ToString()
+            });
+        }
+
         [HttpPost("query/{sessionId}/{langCode}")]
         public ActionResult<Models.DataflowResponse> Query(string sessionId, string langCode, [FromBody] Models.DialogflowRequest req)
         {
@@ -43,8 +51,24 @@ namespace API.Controllers
                 {
                     Text = req.Query,
                     LanguageCode = langCode
+                },
+                Event = new EventInput()
+                {
+                    
+                    LanguageCode = langCode,
+                    Name = "_backendInputs",
+                    Parameters = new Google.Protobuf.WellKnownTypes.Struct()
                 }
             };
+
+            if(req.DeviceLocation.HasValue)
+            {
+                var p = new Google.Protobuf.WellKnownTypes.Struct();
+                AddField(p, "latitude", req.DeviceLocation.Value.Latitude);
+                AddField(p, "longitude", req.DeviceLocation.Value.Longitude);
+                AddField(p, "altitude", req.DeviceLocation.Value.Altitude);
+                AddField(query.Event.Parameters, "place", p);
+            }
 
             var dialogFlow = client.DetectIntent(
                 new SessionName(agent, sessionId),
