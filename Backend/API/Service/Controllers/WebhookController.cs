@@ -9,12 +9,13 @@ using Grpc.Auth;
 using System.IO;
 using Google.Protobuf;
 using System;
+using Google.Protobuf.WellKnownTypes;
 
 namespace API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class WebhookController : Controller
+    public class WebhookController : ApiController
     {
         private static readonly JsonParser jsonParser = new JsonParser(JsonParser.Settings.Default.WithIgnoreUnknownFields(true));
 
@@ -25,21 +26,8 @@ namespace API.Controllers
             _logger = logger;
         }
 
-        private static (bool, Google.Protobuf.WellKnownTypes.Value) ExtractField(Google.Protobuf.WellKnownTypes.Struct s, string key)
-        {
-            return s.Fields.TryGetValue(key, out var val) ? (true, val) : (false, null);
-        }
-
-        private static bool AddField<T>(Google.Protobuf.WellKnownTypes.Struct s, string key, T val)
-        {
-            return s.Fields.TryAdd(key, new Google.Protobuf.WellKnownTypes.Value()
-            {
-                StringValue = val.ToString()
-            });
-        }
-
         [HttpPost("fulfillment")]
-        public async Task<JsonResult> Fulfillment()
+        public JsonResult Fulfillment()
         {
             WebhookRequest request;
             using (var reader = new StreamReader(Request.Body))
@@ -49,14 +37,15 @@ namespace API.Controllers
             var response = new WebhookResponse();
 
             var @params = request.QueryResult.Parameters;
+            response.FulfillmentText = request.QueryResult.Intent.DisplayName;
             switch (request.QueryResult.Intent.DisplayName)
             {
-                case "Fill-Nota-Spese":
+                case "Test01":
                     var evt = new EventInput()
                     {
-                        Name = "nota-spese",
-                        LanguageCode = "it_IT",
-                        Parameters = new Google.Protobuf.WellKnownTypes.Struct()
+                        Name = "TEST_EVENT",
+                        LanguageCode = "it-IT",
+                        Parameters = new Struct()
                     };
 
                     var (hasPlace, _) = ExtractField(@params, "place");
@@ -65,7 +54,7 @@ namespace API.Controllers
 
                     if (!hasPlace)
                     {
-                        AddField(evt.Parameters, "place", "");
+                        AddField(evt.Parameters, "place", Value.KindOneofCase.StringValue, "Genova");
                     }
                     response.FollowupEventInput = evt;
                     break;
