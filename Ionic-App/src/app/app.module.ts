@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
-
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
@@ -15,6 +14,8 @@ import { Diagnostic } from '@ionic-native/diagnostic/ngx';
 import { SpeechRecognition } from '@ionic-native/speech-recognition/ngx';
 import { TextToSpeech } from '@ionic-native/text-to-speech/ngx';
 import { AssistantService } from './service/assistant/assistant.service';
+import { Geolocation } from '@ionic-native/geolocation/ngx';
+import { NativeGeocoder } from '@ionic-native/native-geocoder/ngx';
 
 @NgModule({
   declarations: [AppComponent],
@@ -24,6 +25,8 @@ import { AssistantService } from './service/assistant/assistant.service';
     StatusBar,
     SplashScreen,
     AlertService,
+    Geolocation,
+    NativeGeocoder,
     SpeechRecognition,
     SpeechToTextService,
     AssistantService,

@@ -27,14 +27,17 @@ namespace API.Controllers
         }
 
         [HttpPost("fulfillment")]
-        public JsonResult Fulfillment()
+        public ContentResult Fulfillment()
         {
             WebhookRequest request;
             using (var reader = new StreamReader(Request.Body))
             {
                 request = jsonParser.Parse<WebhookRequest>(reader);
             }
-            var response = new WebhookResponse();
+            var response = new WebhookResponse()
+            {
+                Source = "Siglatech"
+            };
 
             var @params = request.QueryResult.Parameters;
             switch (request.QueryResult.Intent.DisplayName)
@@ -43,7 +46,7 @@ namespace API.Controllers
                     var evt = new EventInput()
                     {
                         Name = "WEBHOOK_INPUTS",
-                        LanguageCode = "it-IT",
+                        LanguageCode = "it",
                         Parameters = new Struct()
                     };
 
@@ -51,13 +54,16 @@ namespace API.Controllers
                     var (hasMoney, _) = ExtractField(@params, "money");
                     var (hasDate , _) = ExtractField(@params, "date" );
 
-                    AddField(evt.Parameters, "place", Value.KindOneofCase.StringValue, hasPlace ? place.StringValue : "Milano");
+
+                    AddField(evt.Parameters, "place", Value.KindOneofCase.StringValue, "Milano");
                     response.FollowupEventInput = evt;
                     break;
                 default:
                     break;
             }
-            return Json(response);
+
+
+            return Content(response.ToString(), "application/json");
         }
     }
 }
