@@ -41,7 +41,10 @@ namespace API.Controllers
 
         protected static void AddDefaultFields(Struct s, Models.DialogflowRequest req)
         {
-            AddField(s, "default_place", Value.KindOneofCase.StringValue, "Napoli");
+            if (!String.IsNullOrWhiteSpace(req.UserGeoCity))
+            {
+                AddField(s, "place", Value.KindOneofCase.StringValue, req.UserGeoCity);
+            }
         }
     }
 }

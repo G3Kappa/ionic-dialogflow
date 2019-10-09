@@ -26,18 +26,18 @@ export class GeoService {
     });
   }
 
-  forwardGeocode(address: string, locale: string = 'it', maxResults: number = 1): Promise<NativeGeocoderResult[]> {
-    return this.geocoder.forwardGeocode(address, {
+  forwardGeocode(address: string, locale: string = 'it', maxResults: number = 1): Observable<NativeGeocoderResult[]> {
+    return from(this.geocoder.forwardGeocode(address, {
       defaultLocale: locale,
       useLocale: !!locale,
       maxResults
-    });
+    }));
   }
-  reverseGeocode(position: Geoposition, locale: string = 'it', maxResults: number = 1): Promise<NativeGeocoderResult[]> {
-    return this.geocoder.reverseGeocode(position.coords.latitude, position.coords.longitude, {
+  reverseGeocode(position: Geoposition, locale: string = 'it', maxResults: number = 1): Observable<NativeGeocoderResult[]> {
+    return from(this.geocoder.reverseGeocode(position.coords.latitude, position.coords.longitude, {
       defaultLocale: locale,
       useLocale: !!locale,
       maxResults
-    });
+    }));
   }
 }

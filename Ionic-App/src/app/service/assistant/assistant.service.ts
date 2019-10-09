@@ -1,32 +1,35 @@
 import { Injectable } from '@angular/core';
-import { AlertController } from '@ionic/angular';
 import { Observable, of } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { map } from 'rxjs/operators';
 
 export class DialogflowResponse {
   responseText: string;
+}
+
+/// Any parameter specified here is fully optional.
+/// Dialogflow will personally ask the user to fill in any missing parameters.
+export interface DialogflowQueryOptions {
+  /// The city that the user is sending this request from (ex. Genoa).
+  userGeoCity?: string;
 }
 
 @Injectable({ providedIn: 'root' })
 export class AssistantService {
   private apiBaseUrl = 'https://siglatechdialogflow.azurewebsites.net';
 
-  constructor(
-    private alertController: AlertController,
-    private httpClient: HttpClient
-    ) {}
+  constructor(private httpClient: HttpClient) {}
 
-  getReply(query: string): Observable<DialogflowResponse> {
-    const options = { headers: new HttpHeaders()
-      .set('Content-Type', 'application/json')
-      .set('Accept', 'application/json')
-    };
-    const post = this.httpClient.post<DialogflowResponse>(
-      `${this.apiBaseUrl}/dialogflow/query/testSession/it_IT/`,
-      JSON.stringify({ query }),
-      options
-    );
+  getReply(query: string, queryOptions?: DialogflowQueryOptions): Observable<DialogflowResponse> {
+    const postOptions = { headers: new HttpHeaders().set('Content-Type', 'application/json').set('Accept', 'application/json') };
+    const endpoint = `${this.apiBaseUrl}/dialogflow/query/testSession/it_IT/`;
+
+    const opts: any = {};
+    opts.query = query;
+    if (queryOptions) {
+      opts.userGeoCity = queryOptions.userGeoCity;
+    }
+
+    const post = this.httpClient.post<DialogflowResponse>(endpoint, JSON.stringify(opts), postOptions);
     return post.pipe();
   }
 }
